@@ -125,7 +125,7 @@ def find_optimal_algorithm(df):
                 predicted = algo(row['days'], row['miles'], row['receipts'])
                 error = abs(predicted - row['output'])
                 errors.append(error)
-            except:
+            except (ValueError, TypeError, ZeroDivisionError):
                 errors.append(1000)
         
         avg_error = np.mean(errors)
@@ -175,7 +175,7 @@ if __name__ == "__main__":
     try:
         result = calculate_reimbursement(sys.argv[1], sys.argv[2], sys.argv[3])
         print(f"{result:.2f}")
-    except:
+    except (ValueError, TypeError, IndexError):
         sys.exit(1)
 '''
     elif "Distance Segmented" in name:
@@ -205,7 +205,7 @@ if __name__ == "__main__":
     try:
         result = calculate_reimbursement(sys.argv[1], sys.argv[2], sys.argv[3])
         print(f"{result:.2f}")
-    except:
+    except (ValueError, TypeError, IndexError):
         sys.exit(1)
 '''
     else:
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     try:
         result = calculate_reimbursement(sys.argv[1], sys.argv[2], sys.argv[3])
         print(f"{result:.2f}")
-    except:
+    except (ValueError, TypeError, IndexError):
         sys.exit(1)
 '''
     

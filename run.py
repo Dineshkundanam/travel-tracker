@@ -24,5 +24,5 @@ if __name__ == "__main__":
     try:
         result = calculate_reimbursement(sys.argv[1], sys.argv[2], sys.argv[3])
         print(f"{result:.2f}")
-    except:
+    except (ValueError, TypeError, IndexError):
         sys.exit(1)
