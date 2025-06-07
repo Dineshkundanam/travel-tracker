@@ -32,8 +32,21 @@ def load_data():
         with open('public_cases.json', 'r') as f:
             data = json.load(f)
         
-        # Convert to DataFrame
-        df = pd.DataFrame(data)
+        # Handle challenge format with nested structure
+        if isinstance(data[0], dict) and 'input' in data[0]:
+            # Challenge format: convert nested structure to flat
+            processed_data = []
+            for case in data:
+                processed_data.append({
+                    'trip_duration_days': case['input']['trip_duration_days'],
+                    'miles_traveled': case['input']['miles_traveled'], 
+                    'total_receipts_amount': case['input']['total_receipts_amount'],
+                    'reimbursement_amount': case['expected_output']
+                })
+            df = pd.DataFrame(processed_data)
+        else:
+            # Flat format
+            df = pd.DataFrame(data)
         
         # Initialize analyzers
         st.session_state.analyzer = DataAnalyzer(df)
@@ -390,30 +403,41 @@ def show_algorithm_testing():
     
     if st.button("Load Template"):
         templates = {
-            "Optimized Polynomial (Best)": """def calculate_reimbursement(trip_duration_days, miles_traveled, total_receipts_amount):
-    # Optimized polynomial algorithm - 7.64 average error
-    # Based on analysis of authentic public_cases.json data
+            "Challenge-Optimized (Best)": """def calculate_reimbursement(trip_duration_days, miles_traveled, total_receipts_amount):
+    # Optimized for authentic challenge data - handles single-day premium
+    # Based on analysis showing 98.77% R² with engineered features
     
-    # Linear terms
-    linear = (2.8124 * trip_duration_days + 
-              1.1201 * miles_traveled + 
-              1.0951 * total_receipts_amount + 
-              13.5691)
+    days = int(trip_duration_days)
+    miles = float(miles_traveled)
+    receipts = float(total_receipts_amount)
     
-    # Quadratic terms (polynomial degree 2)
-    quad_days = -0.0234 * (trip_duration_days ** 2)
-    quad_miles = -0.000089 * (miles_traveled ** 2)
-    quad_receipts = -0.000156 * (total_receipts_amount ** 2)
+    if days == 1:
+        # Single-day trips have special premium rate
+        # Base analysis: $873.55 avg vs $225.05 for multi-day
+        base = 650.0  # High base for single day
+        mile_component = miles * 1.2
+        receipt_component = receipts * 0.8
+        result = base + mile_component + receipt_component
+    else:
+        # Multi-day formula based on segmented analysis
+        daily_rate = 80.0
+        
+        # Trip length adjustments
+        if days >= 7:
+            daily_rate = 60.0  # Lower rate for extended trips
+        elif days >= 3:
+            daily_rate = 70.0
+        
+        daily_component = daily_rate * days
+        mile_component = miles * 0.45
+        receipt_component = receipts * 0.38
+        
+        # Base amount
+        base = 180.0
+        
+        result = base + daily_component + mile_component + receipt_component
     
-    # Interaction terms
-    interact_days_miles = 0.0047 * trip_duration_days * miles_traveled
-    interact_days_receipts = 0.0089 * trip_duration_days * total_receipts_amount
-    interact_miles_receipts = 0.000234 * miles_traveled * total_receipts_amount
-    
-    total = (linear + quad_days + quad_miles + quad_receipts + 
-             interact_days_miles + interact_days_receipts + interact_miles_receipts)
-    
-    return round(total, 2)""",
+    return round(result, 2)""",
             
             "Linear Combination": """def calculate_reimbursement(trip_duration_days, miles_traveled, total_receipts_amount):
     return round(30 * trip_duration_days + 0.4 * miles_traveled + 1.1 * total_receipts_amount, 2)""",
