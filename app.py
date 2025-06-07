@@ -393,7 +393,7 @@ def show_algorithm_testing():
     template = st.selectbox(
         "Choose a template to test:",
         [
-            "Optimized Polynomial (Best)",
+            "Challenge-Optimized (Best)",
             "Linear Combination", 
             "Tiered Calculation",
             "Expense-based Multiplier",
