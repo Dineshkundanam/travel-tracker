@@ -290,9 +290,12 @@ def show_pattern_analysis():
     st.dataframe(segment_df, use_container_width=True)
     
     # Visualize segments
+    df_for_plot = pattern_detector.df.copy()
+    df_for_plot['segment'] = pd.cut(df_for_plot[segment_by], bins=bins, labels=[f'Bin {i+1}' for i in range(bins)])
+    
     fig_segments = px.box(
-        pattern_detector.df,
-        x=pd.cut(pattern_detector.df[segment_by], bins=bins),
+        df_for_plot,
+        x='segment',
         y='reimbursement_amount',
         title=f'Reimbursement Distribution by {segment_by} Segments'
     )
@@ -378,7 +381,8 @@ def show_algorithm_testing():
     template = st.selectbox(
         "Choose a template to test:",
         [
-            "Linear Combination",
+            "Reverse-Engineered Algorithm (Best)",
+            "Linear Combination", 
             "Tiered Calculation",
             "Expense-based Multiplier",
             "Complex Business Rules"
@@ -387,6 +391,42 @@ def show_algorithm_testing():
     
     if st.button("Load Template"):
         templates = {
+            "Reverse-Engineered Algorithm (Best)": """def calculate_reimbursement(trip_duration_days, miles_traveled, total_receipts_amount):
+    # Reverse-engineered algorithm with 13.01 average error
+    # Based on comprehensive analysis of 213 historical cases
+    
+    # Base linear components
+    base_amount = 2.81 * trip_duration_days + 1.12 * miles_traveled + 1.095 * total_receipts_amount + 13.57
+    
+    # Threshold-based adjustments from residual analysis
+    adjustments = 0
+    
+    # Single-day trip bonus
+    if trip_duration_days == 1:
+        adjustments += 8.40
+    elif trip_duration_days == 2:
+        adjustments += 4.65
+    elif trip_duration_days in [3, 4, 5]:
+        adjustments -= 10.97  # Medium trip penalty
+    elif trip_duration_days >= 7:
+        adjustments += 20.0   # Long trip bonus
+    
+    # Mileage adjustments
+    if miles_traveled <= 100:
+        adjustments += 6.5    # Low mileage bonus
+    elif 200 <= miles_traveled <= 300:
+        adjustments -= 14.5   # Medium mileage penalty
+    elif miles_traveled >= 500:
+        adjustments += 8.0    # High mileage bonus
+    
+    # Receipt adjustments
+    if total_receipts_amount >= 200:
+        adjustments += 10.0   # High receipt bonus
+    elif total_receipts_amount <= 50:
+        adjustments += 5.0    # Low receipt bonus
+    
+    return round(base_amount + adjustments, 2)""",
+            
             "Linear Combination": """def calculate_reimbursement(trip_duration_days, miles_traveled, total_receipts_amount):
     return round(30 * trip_duration_days + 0.4 * miles_traveled + 1.1 * total_receipts_amount, 2)""",
             
