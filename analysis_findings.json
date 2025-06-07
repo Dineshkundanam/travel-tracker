@@ -1,0 +1,13 @@
+{
+  "linear_regression": {
+    "r2_score": 0.9985939760524924,
+    "daily_rate": 2.8124485785993025,
+    "mile_rate": 1.120119383773684,
+    "receipt_multiplier": 1.0950682401146246,
+    "intercept": 13.56911424609143
+  },
+  "receipt_analysis": {
+    "mean_multiplier": 3.752731345165851,
+    "median_multiplier": 3.655263157894737
+  }
+}

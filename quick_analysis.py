@@ -25,9 +25,10 @@ def load_and_analyze():
     print("\nCheck for missing values:")
     print(df.isnull().sum())
     
-    # Clean the data - remove any rows with missing values
-    df_clean = df.dropna()
-    print(f"\nAfter removing missing values: {len(df_clean)} cases")
+    # Clean the data - only keep the relevant columns and remove problematic ones
+    df_clean = df[['trip_duration_days', 'miles_traveled', 'total_receipts_amount', 'reimbursement_amount']].copy()
+    df_clean = df_clean.dropna()
+    print(f"\nAfter cleaning data: {len(df_clean)} cases")
     
     # Check for linear relationships
     print("\n=== LINEAR RELATIONSHIP ANALYSIS ===")
@@ -98,7 +99,7 @@ def load_and_analyze():
     
     # Look at a few specific examples
     print("\n=== SAMPLE CASES ANALYSIS ===")
-    sample_cases = df.head(10)
+    sample_cases = df_clean.head(10)
     for _, row in sample_cases.iterrows():
         days = row['trip_duration_days']
         miles = row['miles_traveled'] 
